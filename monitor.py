@@ -23,11 +23,12 @@ if sites is None or len(sites) < 1:
     print('No sites configured!')
 else:
     for site in sites:
-        x = site['id']
+        x = site['url']
+        print(site)
         if validators.url(x):
             r = requests.get(x)
             content_len = len(r.text)
             curr_content_len = site[CONTENT_LENGTH_KEY]
             if curr_content_len != content_len:
                 alert("URL changed from " + str(curr_content_len) + " to " + str(content_len), x)
-                firebase_client.set_new_length(x, content_len)
+                firebase_client.set_new_length(site['id'], x, content_len)
