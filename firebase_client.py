@@ -2,6 +2,7 @@ import firebase_admin
 from firebase_admin import credentials, messaging, firestore
 
 tokens = []
+db = None
 
 def load_tokens():
     db = firestore.client()
@@ -35,3 +36,18 @@ def send_message(topic, title, text):
     response = messaging.send_multicast(message)
     # Response is a message ID string.
     print('{0} messages were sent successfully'.format(response.success_count))
+
+def get_conf_sites():
+    sites = []
+    if db is not None:
+        sites_stream = db.collection(u'sites').stream()
+        for site in sites_stream:
+            sites.append(site.to_dict())
+    return sites
+
+def set_new_length(url, length):
+    if db is not None:
+        data = {
+            u'content-length': length
+        }
+        db.collection(u'sites').document(url).set(data)
